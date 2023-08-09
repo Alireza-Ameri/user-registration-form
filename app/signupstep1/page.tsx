@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function SignupStep1() {
   const [file, setFile] = useState<any>();
@@ -7,10 +8,17 @@ export default function SignupStep1() {
     console.log(e.target.files);
     setFile(URL.createObjectURL(e.target.files[0]));
   };
+  const { push } = useRouter();
 
   return (
     <div className="w-screen h-screen flex justify-center items-center">
-      <form className="max-w-2xl">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          push("/signupstep2");
+        }}
+        className="max-w-2xl"
+      >
         <div className="flex flex-wrap border shadow rounded-lg p-3 dark:bg-gray-600">
           <h2 className="text-xl text-gray-600 pb-2">Account settings:</h2>
 
