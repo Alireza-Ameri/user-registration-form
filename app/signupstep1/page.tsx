@@ -1,24 +1,42 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 export default function SignupStep1() {
+  const { push } = useRouter();
   const [file, setFile] = useState<any>();
   const handleChange = (e: any) => {
     console.log(e.target.files);
     setFile(URL.createObjectURL(e.target.files[0]));
   };
-  const { push } = useRouter();
+  const formik = useFormik({
+    initialValues: {
+      firstName: "",
+      lastName: "",
+    },
+    validationSchema: Yup.object({
+      firstName: Yup.string()
+        .min(3, "Too Short!")
+        .max(50, "Too Long!")
+        .required("Required"),
+      lastName: Yup.string()
+        .min(3, "Too Short!")
+        .max(50, "Too Long!")
+        .required("Required"),
+    }),
+    onSubmit: function (values) {
+      if (file) push("/signupstep2");
+      else {
+        alert(`upload a profile picture`);
+      }
+    },
+  });
 
   return (
     <div className="w-screen h-screen flex justify-center items-center">
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          push("/signupstep2");
-        }}
-        className="max-w-2xl"
-      >
+      <form onSubmit={formik.handleSubmit} className="max-w-2xl">
         <div className="flex flex-wrap border shadow rounded-lg p-3 dark:bg-gray-600">
           <h2 className="text-xl text-gray-600 pb-2">Account settings:</h2>
 
@@ -82,8 +100,12 @@ export default function SignupStep1() {
             <div>
               <label className="text-gray-600 ">FirstName</label>
               <input
+                name="firstName"
+                id="firstName"
                 className="w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
                 type="text"
+                onChange={formik.handleChange}
+                value={formik.values.firstName}
               />
             </div>
 
@@ -92,8 +114,12 @@ export default function SignupStep1() {
                 LastName
               </label>
               <input
+                id="lastName"
+                name="lastName"
                 className="w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
                 type="text"
+                onChange={formik.handleChange}
+                value={formik.values.lastName}
               />
             </div>
             <div className="flex justify-end">

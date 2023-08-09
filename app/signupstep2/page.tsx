@@ -1,12 +1,35 @@
 "use client";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 export default function SignupStep2() {
   const { push } = useRouter();
+  const formik = useFormik({
+    initialValues: {
+      userName: "",
+      password: "",
+    },
+    validationSchema: Yup.object({
+      userName: Yup.string()
+        .min(3, "Too Short!")
+        .max(50, "Too Long!")
+        .required("Required"),
+      password: Yup.string()
+        .min(3, "Too Short!")
+        .max(50, "Too Long!")
+        .required("Required"),
+    }),
+    onSubmit: function (values) {
+      console.log(JSON.stringify(values, null, 4));
+      alert(
+        `You are registered! userName: ${values.userName}. password: ${values.password}`
+      );
+    },
+  });
   return (
     <div className="w-screen h-screen flex justify-center items-center">
-      <form className="max-w-2xl">
+      <form onSubmit={formik.handleSubmit} className="max-w-2xl">
         <div className="flex flex-wrap border shadow rounded-lg p-3 dark:bg-gray-600">
           <h2 className="text-xl text-gray-600 pb-2">Account settings:</h2>
 
@@ -14,8 +37,12 @@ export default function SignupStep2() {
             <div>
               <label className="text-gray-600 ">username</label>
               <input
+                id="userName"
+                name="userName"
                 className="w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
                 type="text"
+                onChange={formik.handleChange}
+                value={formik.values.userName}
               />
             </div>
 
@@ -24,8 +51,12 @@ export default function SignupStep2() {
                 password
               </label>
               <input
+                id="password"
+                name="password"
                 className="w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow"
                 type="password"
+                onChange={formik.handleChange}
+                value={formik.values.password}
               />
             </div>
             <div className="flex items-center justify-between">
